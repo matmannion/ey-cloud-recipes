@@ -159,4 +159,4 @@
   # postgresql9_pg_freespacemap "postgres"
 # end
 
-require_recipe "build-essential"
+include_recipe "tripwire"
