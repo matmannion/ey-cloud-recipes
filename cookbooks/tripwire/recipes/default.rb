@@ -38,8 +38,7 @@ template '/etc/tripwire/twinstall.sh' do
 end
 
 # Run the install file to generate keys
-#execute "generate tripwire keys" do
-#	cwd "/etc/tripwire"
-#	command "/etc/tripwire/twinstall.sh"
-#	not_if { File.directory?("/usr/lib/elasticsearch-#{node[:elasticsearch_version]}/plugins/#{name}") }
-#end
+execute "generate tripwire keys" do
+	cwd "/etc/tripwire"
+	command "/etc/tripwire/twinstall.sh"
+end
