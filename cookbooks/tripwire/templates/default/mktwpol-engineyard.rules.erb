@@ -1,0 +1,484 @@
+# /etc/tripwire/mktwpol-gentoo-140404.rules
+# https://sourceforge.net/projects/mktwpol
+
+RULES_VERSION="mktwpol EngineYard (Gentoo)"
+
+# Copyright (C) 2013-2014 Chuck Seyboldt <c.cboldt@gmail.com>
+# This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License
+# http://creativecommons.org/licenses/by-sa/3.0/
+
+# A Gentoo-oriented Tripwire Policy Text Generator
+# Creates tripwire policy text from lists of package names
+# This file is that list of package names.  The variables set by this
+# file are processed by a script, mktwpol.sh, to produce tripwire policy
+
+# Brief description of array variables used to generate tripwire policies
+# =======================================================================
+# RULENAME[]	Rule Name, each unique to avoid errors at `tripwire --init`
+# PACKAGES[]	Optional list of package names under this Rule Name
+# STOPLIST[]	Optional list of stop points (files or directories)
+# FILELIST[]	Optional lists of individual file names (wildcards okay)
+# COMMENTS[]	Optional comments, associated with the FileList
+# SEVERITY[]	defaults to 100   - written rule-by-rule
+#  EMAILTO[]	defaults to empty - written rule-by-rule
+#		Note: This e-mail depends on `tripwire --email-report`
+#
+# Optional rule-by-rule Security *Aliases* for File Property Inspection Masks
+# ===========================================================================
+#  BIN_SEC[]	defaults to ReadOnly - also applies to files in lib/
+#  ETC_SEC[]	defaults to Dynamic  - also applies to Directories
+#  LOG_SEC[]	defaults to Growing
+#
+# Optional list-by-list modifications to default or defined Inspection Masks
+# ==========================================================================
+#  SEC_MOD[]	defaults to empty - written file-by-file across PACKAGE or FILELIST
+#  SFT_MOD[]	defaults to empty - when assigned, applies only to SoftLinks
+#  RECURSE[]	defaults to (recurse=true) - applies only to Directories
+#   EXCEPT[]	defaults to empty - "special" file(s) in expanded wildcard list
+#   SEC_EX[]	defaults to empty - *non-alias* security rule for "special" files
+
+# The script handles variables for multiple filelists within a single rule
+#   - Useful for specializing Comments and Inspection Masks
+# FILELIST_x variable names MUST be sequential, starting with "x" = "2"
+# Available correlated variables: COMMENTS_x, SEC_MOD_x, SFT_MOD_x, and RECURSE_x
+# STOPLIST[] array remains in effect against FILELIST_x wildcards
+
+# - For packages not named in a PACKAGES[] list, many file changes will
+#   be caught by a catchall rule, "OS Bin and Lib" or "User Bin and Lib".
+#   (many package names are noted in the default list, but my view is myopic)
+# - Optional mktwpol.cfg (or other) configuration file can be used to:
+#	- set default mktwpol.sh/twsetup.sh command-line switches
+#	- automate passphrase response to tripwire prompts
+#	- substitute, augment, or modify package lists and file lists
+
+# Tripwire property mask characters (from `man twpolicy`)
+# ---------------------------------
+#	a	Access timestamp
+#	b	Number of blocks allocated
+#	c	Inode timestamp (create/modify)
+#	d	ID of device on which inode resides
+#	g	File owner's group ID
+#	i	Inode number
+#	l	File is increasing in size (a "growing file")
+#	m	Modification timestamp
+#	n	Number of links (inode reference count)
+#	p	Permissions and file mode bits
+#	r	ID of device pointed to by inode
+#		(valid only for device objects)
+#	s	File size
+#	t	File type
+#	u	File owner's user ID
+#	C	CRC-32 hash value
+#	H	Haval hash value
+#	M	MD5 hash value
+#	S	SHA hash value
+#
+# Standard Tripwire File Property Mask Aliases
+# --------------------------------------------
+#	ReadOnly	+pinugtsdbmCM-rlacSH
+#	Dynamic		+pinugtd-srlbamcCMSH
+#	Growing		+pinugtdl-srbamcCMSH
+#	Device		+pugsdr-intlbamcCMSH
+#	IgnoreAll	-pinugtsdrlbamcCMSH
+#	IgnoreNone	+pinugtsdrbamcCMSH-l
+#
+# Non-standard File Property Mask Aliases
+# --------------------------------------------
+#	Invariant	+pugt		# Permissions, UID, GID, and filetype
+#	SoftLink	+pinugtsdbmc	# Skip checking hash values
+
+# If one wants to find SUID and SGID files ...
+# find / -group kmem -perm -2000 -print # Finds SGID files, owned by kmem
+# find /  -user root -perm -4000 -print # Finds SUID files, owned by root
+
+###########  Start Default Package Lists and RuleName Definitions
+
+for i in 0 1 3 4 5 8 9 10 11 12 13 14 15 16 17 22 26 27; do
+  ETC_SEC[$i]='ReadOnly'
+done
+
+  RULENAME[0]='System Auditing Programs'
+  PACKAGES[0]="tripwire mktwpol aide chkrootkit fwlogwatch logwatch lynis \
+ nagios openscap osiris rkhunter sleuthkit yasat unhide filewatcher integrit \
+ logcheck logsentry logsurfer+ lsat petrovich sagan tenshi yaala sxid nikto \
+ icinga postfix-logwatch mk-livestatus inotify-tools monit audit"
+   EMAILTO[0]='"<%=tripwire_emailto%>"'
+COMMENTS_2[0]='Audit programs data directories'
+FILELIST_2[0]="/var/lib/rkhunter/db"
+ RECURSE_2[0]=' (recurse = 0)'
+ SEC_MOD_2[0]=' -sbmcCM'
+
+RULENAME[1]='Security Related Programs'
+PACKAGES[1]="shadow sys-libs/pam pambase sudo xc openldap openssl openssh \
+ gnupg libgpg-error gnutls cracklib cyrus-sasl pax-utils dev-libs/nss ccid \
+ consolekit polkit skey sssd pinentry libgcrypt truecrypt chntpw puppet \
+ watchdog dropbear xhost obfsproxy polarssl aircrack-ng loop-aes keystone \
+ pssh pam_ssh qca-ossl pycrypto lxsession pass mit-krb5 freeradius gnuradius \
+ mhash cyassl acl fprintd munge nss_ldap pam_mount codecrypt ssdeep \
+ m2crypto nss-pam-ldapd bcwipe"
+ EMAILTO[1]='"<%=tripwire_emailto%>"'
+COMMENTS[1]='Security Control Files'
+FILELIST[1]="/etc/security"
+
+RULENAME[2]='[core|diff|find]utils procps'
+PACKAGES[2]="coreutils diffutils wdiff findutils procps htop lsof perf \
+ powertop iotop procinfo procinfo-ng psmon psmisc procenv cdiff oprofile \
+ bsdiff sysstat killproc verynice ftop proot md5deep criu \
+ lttng-modules lttng-tools nmon"
+ EMAILTO[2]='"<%=tripwire_emailto%>"'
+
+# Disambiguation by including category with a package name is superfluous
+# The script only prints rules for packages that are installed, and then
+# only for files that are tested to exist
+
+RULENAME[3]='Network - Setup/Services'
+PACKAGES[3]="net-tools iproute2 iputils dhcpcd dhcdrop ppp \
+ madwifi-ng-tools hostap-utils hostapd wireless-tools wpa_supplicant \
+ iw bind bind-tools djbdns dnsmasq maradns mydns pdns pdnsd unbound wicd whois \
+ libidn mgetty rsync samba telnet-bsd netkit-talk ytalk avahi obexftp \
+ wireless-regdb yp-tools ypserv ypbind strongswan quagga tftp-hpa \
+ tightvnc x11vnc net-misc/tor qshare libsrtp autoupnp nsd mpd distcc \
+ sshuttle openvpn vpnc tinc x2goserver asterisk pptpd openresolv ipvsadm \
+ swift cinder nova neutron glance netatalk cyphesis rtmpdump \
+ salt radmind ipxe opendnssec openvswitch keepalived exabgp \
+ dnsimple-dyndns xrootd opendchub radvd netpipes atftp dibbler vrrpd \
+ rbldnsd sheerdns torque openswan dante portfwd stuntman xl2tpd knot \
+ heartbeat pacemaker corosync noip-updater ofono frox hylafaxplus \
+ nsscache socat rygel sslh ansible connman netplug siproxd cfengine \
+ freerdp nstx minidlna portspoof netkit-telnetd fakeidentd irda-utils \
+ isatapd"
+ EMAILTO[3]='"<%=tripwire_emailto%>"'
+
+RULENAME[4]='Network - Filter/View'
+PACKAGES[4]="tcpdump tcp-wrappers mrtg netcat netcat6 nmap sniffit wireshark \
+ iptables iptstate pktstat denyhosts fail2ban knock ngrep vnstat sshguard \
+ conntrack-tools ferm firewalld fwipsec ipkungfu nfacct nufw psad tcpflow \
+ argus dsniff gnu-netcat nast nload ntop portmon ssldump ifstat \
+ nessus nessus-bin snort slurm zniper sslsniff ettercap hping privoxy \
+ shorewall shorewall-core shorewall-lite shorewall6 shorewall6-lite \
+ scanssh ike-scan portsentry fping openvas sslscan wapiti zabbix munin \
+ mtr zmap netsniff-ng ldns-utils iftop netwatch yersinia ipsec-tools \
+ hydra darkstat nftables iptraf-ng braa knocker nmbscan nsat synscan \
+ pglinux pmacct openbsd-netcat tcpreplay stunnel macchanger rtsp-conntrack \
+ libnetfilter_conntrack ufw bwping ifstatus nethogs isic netwox tcpstat \
+ ipaudit tcptrack bmon masscan tcptraceroute speedtest-cli arpd netselect \
+ net-snmp rrdtool metasploit"
+ EMAILTO[4]='"<%=tripwire_emailto%>"'
+
+# progsreiserfs produces no bin/ or /etc/ files  ...
+# it produces  /usr/lib/libdal.so and /usr/lib/libreiserfs.so
+
+RULENAME[5]='Filesystem Programs'
+PACKAGES[5]="attr e2fsprogs reiserfsprogs reiser4progs xfsprogs xfsdump \
+ cifs-utils ntfs3g jfsutils sysfsutils autofs lvm2 mdadm mtools \
+ fuse sshfs-fuse dosfstools btrfs-progs glusterfs bindfs zfs zfs-kmod gvfs \
+ moosefs ocfs ocfs2-tools go-mtpfs s3ql bcache-tools aufs3 aufs-util \
+ exfat-utils f2fs-tools nilfs-utils nfs-utils squashfs-tools squashfuse \
+ snapraid archivemount unionfs-fuse lessfs cryptsetup cvmfs s3fs blocks \
+ smbnetfs unadf curlftpfs simple-mtpfs zisofs-tools rar2fs ifuse \
+ ecryptfs-utils thin-provisioning-tools ceph"
+ EMAILTO[5]='"<%=tripwire_emailto%>"'
+COMMENTS[5]='From sys-fs/progsreiserfs'
+FILELIST[5]='/usr/lib/libdal-* /usr/lib/libreiserfs-*'
+
+RULENAME[6]='File Manipulation Programs'
+PACKAGES[6]="gawk grep patch cpio file gettext groff less sys-apps/man \
+ mlocate which ncurses slang sed minised moreutils patchutils poppler \
+ libcap libcap-ng testdisk yacc bison glark coccinelle byacc dos2unix \
+ ronn sgrep recode unifdef enca"
+ EMAILTO[6]='"<%=tripwire_emailto%>"'
+
+RULENAME[7]='Toolchain Programs'
+PACKAGES[7]="gcc binutils glibc klibc libtool makedepend kgcc64 \
+ make autoconf autoconf-wrapper automake automake-wrapper cmake pmake \
+ imake dev-util/ninja pcc tcc qtcore binutils-apple gnuconfig uclibc \
+ gnustep-base icmake scons dietlibc binutils-config gcc-config"
+ EMAILTO[7]='"<%=tripwire_emailto%>"'
+
+# Detect new and removed user crontabs.
+# Ignore modification of existing crontabs.
+
+RULENAME[8]='Cron, Inetd, and Logging'
+PACKAGES[8]="anacron bcron cronie dcron fcron incron vixie-cron xinetd \
+ metalog sysklogd newsyslog rsyslog syslog-ng logrotate tmpwatch ntp openntpd \
+ socklog ulogd logserial iplog scanlogd htpdate chrony collectd syslogread \
+ cronutils minlog cronbase"
+ EMAILTO[8]='"<%=tripwire_emailto%>"'
+COMMENTS[8]='User-installed crontabs'
+FILELIST[8]='/var/spool/cron/crontabs'
+
+RULENAME[9]='Shell and Terminal Programs'
+PACKAGES[9]="bash zsh ccsh dash dsh esh fish ksh tcsh sash rssh busybox \
+ screen tmux dtach conmux pdsh psh mksh scponly toybox \
+ aterm eterm rxvt rxvt-unicode suite3270 xterm xvt"
+ EMAILTO[9]='"<%=tripwire_emailto%>"'
+
+RULENAME[10]='Database Related Programs'
+PACKAGES[10]="gdbm dev-db/mysql postgresql-server qdbm sqlite sys-libs/db \
+ redland mdbtools redis mongodb alembic ldb couchdb hdf5 idutils \
+ mysql-init-scripts unixODBC"
+ EMAILTO[10]='"<%=tripwire_emailto%>"'
+
+RULENAME[11]='MTA Related Programs'
+PACKAGES[11]="sendmail postfix exim esmtp msmtp ssmtp qpsmtpd smtptools \
+ mail-client/mailx procmail opensmtpd nullmailer bincimap courier courier-imap \
+ cyrus-imapd dovecot popa3d tpop3d mini-qmail netqmail qmail-ldap qpopper \
+ uw-imap uw-mailutils perdition mpop clamav clamsmtp fdm fetchmail getmail \
+ spamassassin bmf bogofilter spamprobe dspam gld imapfilter popfile \
+ postgrey razor rblcheck opendmarc isync amavisd-new opendkim amavis-logwatch \
+ mimedefang mailfilter dbmail imapsync mailutils"
+ EMAILTO[11]='"<%=tripwire_emailto%>"'
+
+RULENAME[12]='IRC/P2P Related Programs'
+PACKAGES[12]="inspircd irc-server ircservices ngircd ptlink-ircd \
+ ejabberd jabberd2 mu-conference mumble openfire umurmur silc-server \
+ asuka dccserver ultimate unrealircd prosody"
+ EMAILTO[12]='"<%=tripwire_emailto%>"'
+
+RULENAME[13]='WWW Related Programs'
+PACKAGES[13]="apache apr boa bozohttpd cherokee fnord lighttpd \
+ monkeyd nginx thttpd tornado gatling gunicorn apache-tools \
+ squid squidclamav squidguard c-icap tinyproxy webfs \
+ dev-haskell/cgi dev-libs/cgicc dev-libs/fcgi uwsgi \
+ www-apache/mod_fastcgi mod_fcgid mod_scgi mod_ftpd \
+ dev-lang/php phpBB phpmyadmin quickshare rails memcached \
+ filezilla netkit-ftpd oftpd proftpd pure-ftpd vsftpd axtls \
+ cntlm ntlmaps varnish lftp oops gorg publicfile mod_gnutls inn \
+ wordpress suhosin mico apr-util haproxy"
+ EMAILTO[13]='"<%=tripwire_emailto%>"'
+FILELIST[13]='/var/www/cgi-bin /var/www/html /var/www/localhost'
+
+# Exception used to stifle recursion in some openrc /lib/rc/* directories
+#
+# process_packagename routine captures *.sh filenames & filters */lib/* filenames
+# Example FILELIST_3[14] in mktwpol.cfg assigns ReadOnly policy for
+#  baselayout-1 scripts that lack .sh suffix, installed in /lib/rcscripts
+
+  RULENAME[14]='Boot, Kernel, and Init'
+  PACKAGES[14]="grub lilo elilo efibootmgr mbr debianutils kccmp \
+ syslinux splashutils fbgetty mingetty qingy xdm gdm kmod \
+ baselayout openrc sysvinit systemd minit runit showconsole s6 \
+ xen xen-pvgrub xen-tools aqemu qemu qemu-user daemontools daemontools-encore \
+ hibernate-script genkernel genkernel-next dracut plymouth slim debootstrap \
+ netifrc gentoo-systemd-integration epoch openrc-settingsd lightdm lxdm \
+ u-boot-tools palo systemd-sysv-utils gnu-efi udev-init-scripts"
+   EMAILTO[14]='"<%=tripwire_emailto%>"'
+  COMMENTS[14]='Contents of /boot directory are safer on an unmounted partition'
+  FILELIST[14]='/boot/* /lib/modules /lib/rc/*'
+    EXCEPT[14]='/lib/rc/cache /lib/rc/console /lib/rc/init.d'
+    SEC_EX[14]='$(ReadOnly) -ims (recurse = 0)'
+COMMENTS_2[14]='Detect current mounting of /boot'
+FILELIST_2[14]='/boot'
+
+RULENAME[15]='Hardware and Device Programs'
+PACKAGES[15]="eudev udev uam pciutils util-linux kbd hdparm sdparm \
+ smartmontools lshw ethtool setserial dmraid \
+ gpart gparted parted partimage ddrescue dd-rescue cups cups-filters hplip \
+ pcsc-lite bluez pcmciautils acpid adjtimex alsa-lib alsa-tools alsa-utils \
+ ms-sys efitools roccat-tools arcconf whdd apcupsd sg3_utils mtx lsscsi \
+ i2c-tools uevt fxload gptfdisk fio linux-gpib lm_sensors nbd cpupower \
+ tw_cli udisks iotools open-iscsi apmd bluedevil pmtools opensc udiskie \
+ noflushd iasl cpufrequtils"
+ EMAILTO[15]='"<%=tripwire_emailto%>"'
+COMMENTS[15]='udev device creation policies and scripts'
+FILELIST[15]='/etc/udev/rules.d /etc/udev/scripts'
+
+  RULENAME[16]='Package Manager Programs'
+  PACKAGES[16]="layman pacman paludis pkgcore rpm equo zypper dpkg \
+ bzr cvs git mercurial monotone subversion veracity setuptools nsis alien \
+ zeroinstall-injector suse-build pkgconfig pkgconf osc stow"
+   EMAILTO[16]='"<%=tripwire_emailto%>"'
+
+  RULENAME[17]='Gentoo Specific Programs'
+  PACKAGES[17]="sys-apps/portage portage-utils gentoolkit eix ufed udept \
+ eselect gcruft conf-update app-portage/epm portpeek fquery flaggie \
+ gentoopm euscan matter pfl http-replicator porticron gentoolkit-dev \
+ python-updater tarsync cfg-update g-cpan esearch elogv perl-cleaner \
+ eselect-java eselect-python eselect-sh localepurge baselayout-java"
+   EMAILTO[17]='"<%=tripwire_emailto%>"'
+COMMENTS_2[17]='/usr/lib/pkgconfig is active at package add/remove'
+FILELIST_2[17]='/usr/lib/pkgconfig'
+ SEC_MOD_2[17]=' -mc'
+ RECURSE_2[17]=' (recurse = 0)'
+COMMENTS_3[17]='Local ebuilds - skip "files" subdirs'
+FILELIST_3[17]='/usr/local/portage'
+ RECURSE_3[17]=' (recurse = 3)'
+
+RULENAME[18]='Programming Languages/Tools'
+PACKAGES[18]="nasm perl dev-lang/python python-exec numpy pygtk \
+ ruby swig tcl tk expect boost boost-build ibm-jdk-bin icedtea icedtea-bin \
+ hp-jdk-bin oracle-jdk-bin scala scala-bin soylatte-jdk-bin apple-jdk-bin \
+ sandbox elixir execline icc ifc fsharp pypy jython cython ccache fpc \
+ llvm clang dragonegg gdb valgrind distorm64 systemtap yap erlang autogen \
+ rakudo nqp swi-prolog vala sbcl ispc julia strace cscope boost-m4 \
+ abcl clisp clozurecl cmucl ecls gcl openmcl jikes ghc idb cmocka flex m4"
+SEVERITY[18]='66'
+ EMAILTO[18]='"<%=tripwire_emailto%>"'
+
+RULENAME[19]='Editor Programs'
+PACKAGES[19]="nano jed joe jupp moe nvi vim-core gvim vim ed emacs mg
+ zile vile hexedit e3 jedit ne adie xvile scite gemas"
+ EMAILTO[19]='"<%=tripwire_emailto%>"'
+COMMENTS[19]='Shared config files'
+FILELIST[19]='/usr/share/nano'
+SEVERITY[19]='66'
+
+RULENAME[20]='Compression/Archiving Programs'
+PACKAGES[20]="tar star bzip2 app-arch/gzip rpm2targz libarchive lz4 lzip \
+ zip unzip libzip xz-utils app-arch/lzma sharutils unrar unrar-gpl tnef \
+ amanda libtar bareos lrzip backuppc turbolift p7zip dropbox deja-dup \
+ duplicity obnam cabextract lbzip2 spideroak-bin lziprecover xdelta \
+ mscompress pigz diffball blosc snappy tsm zpaq dar pdlzip plzip \
+ fsarchiver ncompress"
+ EMAILTO[20]='"<%=tripwire_emailto%>"'
+SEVERITY[20]='66'
+
+#####  End of PACKAGES[] package lists  #####
+#####  Some   FILELIST[] rules below cribbed from GENERIC policy file
+
+# Script limits listing of files in /proc directory to zero size, non-directory
+# Avoids opening devices (recursion) by applying the $(Device) policy to
+# block and character special devices.  See "select_policy" routine.
+# Assumes that Inode changes for listed /dev files, most under creation by udev
+# Note:	Device and /proc changes may occur when moving between kernels
+
+  RULENAME[21]='Critical Devices'
+  COMMENTS[21]='GENERIC config named kmem, mem, null, zero'
+  FILELIST[21]="/dev/kmem /dev/mem /dev/null /dev/zero \
+ /dev/console /dev/cua0 /dev/gpmctl /dev/initctl /dev/log /dev/port \
+ /dev/ppp /dev/ptyp* /dev/tty* /dev/urandom /dev/watchdog*"
+   SEC_MOD[21]=' -i'
+   EMAILTO[21]='"<%=tripwire_emailto%>"'
+COMMENTS_2[21]='several /proc/* files undergo time modification'
+FILELIST_2[21]='/proc/*'
+ SEC_MOD_2[21]=' -m'
+ SFT_MOD_2[21]=' -mc'
+
+  RULENAME[22]='Other Config Files'
+   EMAILTO[22]='"<%=tripwire_emailto%>"'
+  COMMENTS[22]='Files not installed with packages'
+  FILELIST[22]='/etc /usr/etc'
+   SEC_MOD[22]=' -m'
+COMMENTS_2[22]='Files systematically modified w/size & inode change'
+FILELIST_2[22]="/etc/cups/printers.conf /etc/cups/printers.conf.O \
+ /etc/cups/subscriptions.conf /etc/cups/subscriptions.conf.0 \
+ /etc/csh.env /etc/profile.env /etc/ld.so.conf /etc/ld.so.cache"
+ SEC_MOD_2[22]=' -mibsCM'
+COMMENTS_3[22]='File systematically modified w/size change'
+FILELIST_3[22]="/etc/adjtime"
+ SEC_MOD_3[22]=' -mbsCM'
+COMMENTS_4[22]='Dirsize may change on plain-text policy delete'
+FILELIST_4[22]="/etc/tripwire"
+ SEC_MOD_4[22]=' -mbs'
+
+# Note:	logrotate can create false alarms
+#  - new log file will be smaller than tripwire observation at database creation
+#  - logrotate.conf 'nocreate' option can result in alarms at absent log files
+# Note: "SEC_MOD=-il" removes the "Growing" test for ALL /var/log files, which
+#	makes the "EXCEPT[] / SEC_EX[]" example moot, as a practical matter.
+#	It might be feasible to set observed filesize of usually growing logs
+#	to a very small value, to enable use of "growing" check, but this moots
+#	the point of looking for unauthorized tampering based on shrinking file.
+#	Tripwire compares to a "fixed" reference point of day-0, and is unsuited
+#	to detect log file tampering based on day-to-day size reduction.
+# Note: permissions of /var/log/rkhunter.log change during a --propupd operation
+#	going from -rw-r--r-- to -rw-------
+#
+# Exception for log files in /var/log/*g wildcard, that don't necessarily grow
+
+RULENAME[23]='Log Files'
+ EMAILTO[23]='"<%=tripwire_emailto%>"'
+COMMENTS[23]='`logrotate` may change logfile inodes'
+FILELIST[23]='/var/log/critical /var/log/messages /var/log/*g'
+SEVERITY[23]='66'
+ SEC_MOD[23]=' -il'
+  EXCEPT[23]='/var/log/rkhunter.log /var/log/Xorg.0.log'
+  SEC_EX[23]='$(Dynamic) -i'
+
+RULENAME[24]='Invariant Directories'
+ EMAILTO[24]='"<%=tripwire_emailto%>"'
+COMMENTS[24]='Owner and group should remain static'
+FILELIST[24]='/ /dev /home /mnt /opt /sys /usr /var'
+SEVERITY[24]='66'
+ ETC_SEC[24]='Invariant'
+ RECURSE[24]=' (recurse = 0)'
+
+RULENAME[25]='Temporary Directories'
+ EMAILTO[25]='"<%=tripwire_emailto%>"'
+FILELIST[25]='/usr/tmp /var/tmp /tmp'
+SEVERITY[25]='33'
+ ETC_SEC[25]='Invariant'
+ RECURSE[25]=' (recurse = 0)'
+
+# Note:	Can't use EXCEPT[]/EX_SEC[] for /lib/splash/cache
+#	EXCEPT[] only has an effect when the specific EXCEPTED filename
+#       appears in the expansion of a FILELIST[] wildcard
+# Use (recurse = 0) (or 1), rather than STOPLIST, to limit range of inspection
+
+  RULENAME[26]='OS Bin and Lib Directories'
+  FILELIST[26]='/bin /lib /sbin /usr/libexec /usr/sbin /usr/local/sbin'
+   EMAILTO[26]='"<%=tripwire_emailto%>"'
+COMMENTS_2[26]='/lib/splash/cache is an active directory'
+FILELIST_2[26]='/lib/splash/cache'
+ RECURSE_2[26]=' (recurse = 0)'
+
+# Note:	Inspection of /usr/lib/pkgconfig should be expanded on a system
+#	that has a fixed or stable set of installed packages.
+# Note: /usr/lib is deliberately not recursed.
+#	See mktwpol.cfg for choosing specified directories for recursion
+
+  RULENAME[27]='User Bin and Lib Directories'
+  FILELIST[27]="/opt/bin /usr/bin /usr/games/bin /usr/local/bin /usr/local/games /usr/local/lib"
+  SEVERITY[27]='66'
+   EMAILTO[27]='"<%=tripwire_emailto%>"'
+COMMENTS_2[27]='Full recursion of /usr/lib is prolix'
+FILELIST_2[27]='/usr/lib'
+ RECURSE_2[27]=' (recurse = 1)'
+
+# Note: Stifling creation of .xauth?????? files is done under xauth program
+#	These .xauth?????? files are made by action of a regular user, who uses
+#	`su`.  The regular user can stifle creation of .xauth?????? files in
+#	/root by adding "export XAUTHORITY=.xauth" in the regular user's .bashrc
+#	** but ** this affects display opening permissions under X-win!
+
+  RULENAME[28]='Root User Directory'
+   EMAILTO[28]='"<%=tripwire_emailto%>"'
+  COMMENTS[28]='X-Windows should not be run as Root User!'
+  FILELIST[28]='/root'
+COMMENTS_2[28]='Action in these directories will trigger a warning'
+FILELIST_2[28]="/root/bin /root/.ssh /root/.amandahosts /root/.gnupg"
+ SEC_MOD_2[28]=' +sbmcCM'
+COMMENTS_3[28]='Files that systematically change'
+FILELIST_3[28]="/root/.bash_history /root/.lesshst \
+ /root/.aumixrc /root/.calc_history \
+ /root/.fonts.cache-1 /root/.fontconfig \
+ /root/.lynx_cookies \
+ /root/.mysql_history \
+ /root/.rnd \
+ /root/.sc_history \
+ /root/.sqlite_history \
+ /root/.stack.wcd /root/.treedata.wcd /root/bin/wcd.go \
+ /root/.wpa_cli_history \
+ /root/.viminfo"
+COMMENTS_4[28]='Files that change inode number'
+FILELIST_4[28]='/root/.Xauthority'
+ SEC_MOD_4[28]=' -i'
+
+# Note the use of an incrementing variable instead of hardcoded rule number.
+# This is especially useful when adding rules from optional mktwpol.cfg file.
+
+let NEXT=${#RULENAME[@]}
+  RULENAME[${NEXT}]='System Boot Changes'
+   EMAILTO[${NEXT}]='"<%=tripwire_emailto%>"'
+  COMMENTS[${NEXT}]='Files that change when the system boots'
+  FILELIST[${NEXT}]='/etc/mtab /etc/ioctl.save /etc/.pwd.lock /var/lock/subsys'
+   SEC_MOD[${NEXT}]=' -i'
+COMMENTS_2[${NEXT}]='Files in these directories change inode number'
+FILELIST_2[${NEXT}]='/run /var/run /var/run/dhcpcd /var/run/screen /var/run/sudo'
+ SEC_MOD_2[${NEXT}]=' -i'
+ RECURSE_2[${NEXT}]=' (recurse = 1)'
+COMMENTS_3[${NEXT}]='number of links for /run/lock can vary'
+FILELIST_3[${NEXT}]='/run/lock'
+ SEC_MOD_3[${NEXT}]=' -in'
+
+###########  End Default Package Lists and RuleName Definitions
