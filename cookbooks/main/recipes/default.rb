@@ -159,4 +159,7 @@ include_recipe "ssmtp"
   # postgresql9_pg_freespacemap "postgres"
 # end
 
+include_recipe "run-on-login"
+
+# Tripwire - run this LAST because the database should include anything else we've installed here
 include_recipe "tripwire"

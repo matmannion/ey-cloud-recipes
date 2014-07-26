@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DATE=`date`
+
+/usr/bin/sendmail "<%= @login_notification_email %>" <<EOF
+Subject: Login detected to ${USER}@${HOSTNAME}
+
+Date: ${DATE}
+Connection: ${SSH_CONNECTION}
+EOF

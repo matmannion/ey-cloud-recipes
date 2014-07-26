@@ -20,6 +20,10 @@ template '/data/mktwpol-0.2.4/mktwpol-engineyard.rules' do
 	mode 0600
 end
 
+ey_cloud_report "Tripwire" do
+  message "generating tripwire policy file"
+end
+
 # Create the twpol.txt file
 execute "create tripwire policy file from rules" do
 	command "sudo /data/mktwpol-0.2.4/mktwpol-0.2.4.sh -R /data/mktwpol-0.2.4/mktwpol-engineyard.rules > /etc/tripwire/twpol.txt"

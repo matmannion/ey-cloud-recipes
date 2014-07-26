@@ -1,0 +1,1 @@
+default[:login_notification_email] = "mat.mannion@gmail.com"
