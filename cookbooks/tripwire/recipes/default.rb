@@ -47,5 +47,11 @@ end
 execute "generate tripwire database" do
 	cwd "/etc/tripwire"
 	command "/usr/sbin/tripwire --init -P #{node[:tripwire_local_passphrase]}"
-end
 #/var/lib/tripwire/ip-172-31-42-172.twd
+end
+
+# Sign the policy file
+execute "sign tripwire policy file" do
+	cwd "/etc/tripwire"
+	command "/usr/sbin/twadmin -m P -Q #{node[:tripwire_site_passphrase]} /etc/tripwire/twpol.txt"
+end
