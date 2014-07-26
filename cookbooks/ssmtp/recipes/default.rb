@@ -23,4 +23,11 @@ if ['solo', 'app', 'util', 'app_master'].include?(node[:instance_role])
     to '/data/ssmtp'
   end
 
+  # Install the ssmtp.conf file.
+  template '/data/ssmtp/ssmtp.conf' do
+    owner node[:owner_name]
+    group node[:owner_name]
+    source 'ssmtp.conf.erb'
+  end
+
 end
