@@ -9,18 +9,6 @@ template '/etc/tripwire/twcfg.txt' do
 	source 'twcfg.txt.erb'
 end
 
-# Use mktwpol to generate the twpol.txt policy file
-remote_file "/tmp/mktwpol-0.2.4.tar.gz" do
-		source "mktwpol-0.2.4.tar.gz"
-		action :create_if_missing
-		mode 0644
-end
-
-execute "install mktwpol" do
-		command "tar -zxvf /tmp/mktwpol-0.2.4.tar.gz mktwpol-0.2.4/"
-		cwd "/data/"
-end
-
 # Create rules file. Must be mode 600 and owned by root else mktwpol won't run
 template '/data/mktwpol-0.2.4/mktwpol-engineyard.rules' do
 	owner "root"
