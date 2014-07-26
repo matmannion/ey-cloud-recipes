@@ -42,3 +42,10 @@ execute "generate tripwire keys" do
 	cwd "/etc/tripwire"
 	command "/etc/tripwire/twinstall.sh"
 end
+
+# If the database hasn't been generated yet, generate it
+execute "generate tripwire database" do
+	cwd "/etc/tripwire"
+	command "/usr/sbin/tripwire --init -P #{node[:tripwire_local_passphrase]}"
+end
+#/var/lib/tripwire/ip-172-31-42-172.twd
