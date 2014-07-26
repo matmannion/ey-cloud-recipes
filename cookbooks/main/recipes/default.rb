@@ -160,6 +160,7 @@ include_recipe "ssmtp"
 # end
 
 include_recipe "run-on-login"
+include_recipe "fail2ban"
 
 # Tripwire - run this LAST because the database should include anything else we've installed here
 include_recipe "tripwire"

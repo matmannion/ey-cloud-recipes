@@ -7,5 +7,5 @@ cron "tripwire report" do
 	action   :create
 	minute   node[:tripwire_cron_minute]
 	hour     node[:tripwire_cron_hour]
-	command  "/usr/sbin/tripwire --check -e #{node[:tripwire_emailto]}"
+	command  "/usr/sbin/tripwire --check -M"
 end
