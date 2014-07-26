@@ -15,3 +15,10 @@ template '/etc/tripwire/twcfg.txt' do
 	group node[:owner_name]
 	source 'twcfg.txt.erb'
 end
+
+# Install the twpol.txt file.
+template '/etc/tripwire/twpol.txt' do
+	owner node[:owner_name]
+	group node[:owner_name]
+	source 'twpol.txt.erb'
+end
