@@ -102,7 +102,7 @@ done
  nagios openscap osiris rkhunter sleuthkit yasat unhide filewatcher integrit \
  logcheck logsentry logsurfer+ lsat petrovich sagan tenshi yaala sxid nikto \
  icinga postfix-logwatch mk-livestatus inotify-tools monit audit"
-   EMAILTO[0]='"<%=tripwire_emailto%>"'
+   EMAILTO[0]='"<%= @tripwire_emailto %>"'
 COMMENTS_2[0]='Audit programs data directories'
 FILELIST_2[0]="/var/lib/rkhunter/db"
  RECURSE_2[0]=' (recurse = 0)'
@@ -116,7 +116,7 @@ PACKAGES[1]="shadow sys-libs/pam pambase sudo xc openldap openssl openssh \
  pssh pam_ssh qca-ossl pycrypto lxsession pass mit-krb5 freeradius gnuradius \
  mhash cyassl acl fprintd munge nss_ldap pam_mount codecrypt ssdeep \
  m2crypto nss-pam-ldapd bcwipe"
- EMAILTO[1]='"<%=tripwire_emailto%>"'
+ EMAILTO[1]='"<%= @tripwire_emailto %>"'
 COMMENTS[1]='Security Control Files'
 FILELIST[1]="/etc/security"
 
@@ -125,7 +125,7 @@ PACKAGES[2]="coreutils diffutils wdiff findutils procps htop lsof perf \
  powertop iotop procinfo procinfo-ng psmon psmisc procenv cdiff oprofile \
  bsdiff sysstat killproc verynice ftop proot md5deep criu \
  lttng-modules lttng-tools nmon"
- EMAILTO[2]='"<%=tripwire_emailto%>"'
+ EMAILTO[2]='"<%= @tripwire_emailto %>"'
 
 # Disambiguation by including category with a package name is superfluous
 # The script only prints rules for packages that are installed, and then
@@ -147,7 +147,7 @@ PACKAGES[3]="net-tools iproute2 iputils dhcpcd dhcdrop ppp \
  nsscache socat rygel sslh ansible connman netplug siproxd cfengine \
  freerdp nstx minidlna portspoof netkit-telnetd fakeidentd irda-utils \
  isatapd"
- EMAILTO[3]='"<%=tripwire_emailto%>"'
+ EMAILTO[3]='"<%= @tripwire_emailto %>"'
 
 RULENAME[4]='Network - Filter/View'
 PACKAGES[4]="tcpdump tcp-wrappers mrtg netcat netcat6 nmap sniffit wireshark \
@@ -163,7 +163,7 @@ PACKAGES[4]="tcpdump tcp-wrappers mrtg netcat netcat6 nmap sniffit wireshark \
  libnetfilter_conntrack ufw bwping ifstatus nethogs isic netwox tcpstat \
  ipaudit tcptrack bmon masscan tcptraceroute speedtest-cli arpd netselect \
  net-snmp rrdtool metasploit"
- EMAILTO[4]='"<%=tripwire_emailto%>"'
+ EMAILTO[4]='"<%= @tripwire_emailto %>"'
 
 # progsreiserfs produces no bin/ or /etc/ files  ...
 # it produces  /usr/lib/libdal.so and /usr/lib/libreiserfs.so
@@ -177,7 +177,7 @@ PACKAGES[5]="attr e2fsprogs reiserfsprogs reiser4progs xfsprogs xfsdump \
  snapraid archivemount unionfs-fuse lessfs cryptsetup cvmfs s3fs blocks \
  smbnetfs unadf curlftpfs simple-mtpfs zisofs-tools rar2fs ifuse \
  ecryptfs-utils thin-provisioning-tools ceph"
- EMAILTO[5]='"<%=tripwire_emailto%>"'
+ EMAILTO[5]='"<%= @tripwire_emailto %>"'
 COMMENTS[5]='From sys-fs/progsreiserfs'
 FILELIST[5]='/usr/lib/libdal-* /usr/lib/libreiserfs-*'
 
@@ -186,14 +186,14 @@ PACKAGES[6]="gawk grep patch cpio file gettext groff less sys-apps/man \
  mlocate which ncurses slang sed minised moreutils patchutils poppler \
  libcap libcap-ng testdisk yacc bison glark coccinelle byacc dos2unix \
  ronn sgrep recode unifdef enca"
- EMAILTO[6]='"<%=tripwire_emailto%>"'
+ EMAILTO[6]='"<%= @tripwire_emailto %>"'
 
 RULENAME[7]='Toolchain Programs'
 PACKAGES[7]="gcc binutils glibc klibc libtool makedepend kgcc64 \
  make autoconf autoconf-wrapper automake automake-wrapper cmake pmake \
  imake dev-util/ninja pcc tcc qtcore binutils-apple gnuconfig uclibc \
  gnustep-base icmake scons dietlibc binutils-config gcc-config"
- EMAILTO[7]='"<%=tripwire_emailto%>"'
+ EMAILTO[7]='"<%= @tripwire_emailto %>"'
 
 # Detect new and removed user crontabs.
 # Ignore modification of existing crontabs.
@@ -203,7 +203,7 @@ PACKAGES[8]="anacron bcron cronie dcron fcron incron vixie-cron xinetd \
  metalog sysklogd newsyslog rsyslog syslog-ng logrotate tmpwatch ntp openntpd \
  socklog ulogd logserial iplog scanlogd htpdate chrony collectd syslogread \
  cronutils minlog cronbase"
- EMAILTO[8]='"<%=tripwire_emailto%>"'
+ EMAILTO[8]='"<%= @tripwire_emailto %>"'
 COMMENTS[8]='User-installed crontabs'
 FILELIST[8]='/var/spool/cron/crontabs'
 
@@ -211,13 +211,13 @@ RULENAME[9]='Shell and Terminal Programs'
 PACKAGES[9]="bash zsh ccsh dash dsh esh fish ksh tcsh sash rssh busybox \
  screen tmux dtach conmux pdsh psh mksh scponly toybox \
  aterm eterm rxvt rxvt-unicode suite3270 xterm xvt"
- EMAILTO[9]='"<%=tripwire_emailto%>"'
+ EMAILTO[9]='"<%= @tripwire_emailto %>"'
 
 RULENAME[10]='Database Related Programs'
 PACKAGES[10]="gdbm dev-db/mysql postgresql-server qdbm sqlite sys-libs/db \
  redland mdbtools redis mongodb alembic ldb couchdb hdf5 idutils \
  mysql-init-scripts unixODBC"
- EMAILTO[10]='"<%=tripwire_emailto%>"'
+ EMAILTO[10]='"<%= @tripwire_emailto %>"'
 
 RULENAME[11]='MTA Related Programs'
 PACKAGES[11]="sendmail postfix exim esmtp msmtp ssmtp qpsmtpd smtptools \
@@ -227,13 +227,13 @@ PACKAGES[11]="sendmail postfix exim esmtp msmtp ssmtp qpsmtpd smtptools \
  spamassassin bmf bogofilter spamprobe dspam gld imapfilter popfile \
  postgrey razor rblcheck opendmarc isync amavisd-new opendkim amavis-logwatch \
  mimedefang mailfilter dbmail imapsync mailutils"
- EMAILTO[11]='"<%=tripwire_emailto%>"'
+ EMAILTO[11]='"<%= @tripwire_emailto %>"'
 
 RULENAME[12]='IRC/P2P Related Programs'
 PACKAGES[12]="inspircd irc-server ircservices ngircd ptlink-ircd \
  ejabberd jabberd2 mu-conference mumble openfire umurmur silc-server \
  asuka dccserver ultimate unrealircd prosody"
- EMAILTO[12]='"<%=tripwire_emailto%>"'
+ EMAILTO[12]='"<%= @tripwire_emailto %>"'
 
 RULENAME[13]='WWW Related Programs'
 PACKAGES[13]="apache apr boa bozohttpd cherokee fnord lighttpd \
@@ -245,7 +245,7 @@ PACKAGES[13]="apache apr boa bozohttpd cherokee fnord lighttpd \
  filezilla netkit-ftpd oftpd proftpd pure-ftpd vsftpd axtls \
  cntlm ntlmaps varnish lftp oops gorg publicfile mod_gnutls inn \
  wordpress suhosin mico apr-util haproxy"
- EMAILTO[13]='"<%=tripwire_emailto%>"'
+ EMAILTO[13]='"<%= @tripwire_emailto %>"'
 FILELIST[13]='/var/www/cgi-bin /var/www/html /var/www/localhost'
 
 # Exception used to stifle recursion in some openrc /lib/rc/* directories
@@ -262,7 +262,7 @@ FILELIST[13]='/var/www/cgi-bin /var/www/html /var/www/localhost'
  hibernate-script genkernel genkernel-next dracut plymouth slim debootstrap \
  netifrc gentoo-systemd-integration epoch openrc-settingsd lightdm lxdm \
  u-boot-tools palo systemd-sysv-utils gnu-efi udev-init-scripts"
-   EMAILTO[14]='"<%=tripwire_emailto%>"'
+   EMAILTO[14]='"<%= @tripwire_emailto %>"'
   COMMENTS[14]='Contents of /boot directory are safer on an unmounted partition'
   FILELIST[14]='/boot/* /lib/modules /lib/rc/*'
     EXCEPT[14]='/lib/rc/cache /lib/rc/console /lib/rc/init.d'
@@ -279,7 +279,7 @@ PACKAGES[15]="eudev udev uam pciutils util-linux kbd hdparm sdparm \
  i2c-tools uevt fxload gptfdisk fio linux-gpib lm_sensors nbd cpupower \
  tw_cli udisks iotools open-iscsi apmd bluedevil pmtools opensc udiskie \
  noflushd iasl cpufrequtils"
- EMAILTO[15]='"<%=tripwire_emailto%>"'
+ EMAILTO[15]='"<%= @tripwire_emailto %>"'
 COMMENTS[15]='udev device creation policies and scripts'
 FILELIST[15]='/etc/udev/rules.d /etc/udev/scripts'
 
@@ -287,7 +287,7 @@ FILELIST[15]='/etc/udev/rules.d /etc/udev/scripts'
   PACKAGES[16]="layman pacman paludis pkgcore rpm equo zypper dpkg \
  bzr cvs git mercurial monotone subversion veracity setuptools nsis alien \
  zeroinstall-injector suse-build pkgconfig pkgconf osc stow"
-   EMAILTO[16]='"<%=tripwire_emailto%>"'
+   EMAILTO[16]='"<%= @tripwire_emailto %>"'
 
   RULENAME[17]='Gentoo Specific Programs'
   PACKAGES[17]="sys-apps/portage portage-utils gentoolkit eix ufed udept \
@@ -295,7 +295,7 @@ FILELIST[15]='/etc/udev/rules.d /etc/udev/scripts'
  gentoopm euscan matter pfl http-replicator porticron gentoolkit-dev \
  python-updater tarsync cfg-update g-cpan esearch elogv perl-cleaner \
  eselect-java eselect-python eselect-sh localepurge baselayout-java"
-   EMAILTO[17]='"<%=tripwire_emailto%>"'
+   EMAILTO[17]='"<%= @tripwire_emailto %>"'
 COMMENTS_2[17]='/usr/lib/pkgconfig is active at package add/remove'
 FILELIST_2[17]='/usr/lib/pkgconfig'
  SEC_MOD_2[17]=' -mc'
@@ -313,12 +313,12 @@ PACKAGES[18]="nasm perl dev-lang/python python-exec numpy pygtk \
  rakudo nqp swi-prolog vala sbcl ispc julia strace cscope boost-m4 \
  abcl clisp clozurecl cmucl ecls gcl openmcl jikes ghc idb cmocka flex m4"
 SEVERITY[18]='66'
- EMAILTO[18]='"<%=tripwire_emailto%>"'
+ EMAILTO[18]='"<%= @tripwire_emailto %>"'
 
 RULENAME[19]='Editor Programs'
 PACKAGES[19]="nano jed joe jupp moe nvi vim-core gvim vim ed emacs mg
  zile vile hexedit e3 jedit ne adie xvile scite gemas"
- EMAILTO[19]='"<%=tripwire_emailto%>"'
+ EMAILTO[19]='"<%= @tripwire_emailto %>"'
 COMMENTS[19]='Shared config files'
 FILELIST[19]='/usr/share/nano'
 SEVERITY[19]='66'
@@ -330,7 +330,7 @@ PACKAGES[20]="tar star bzip2 app-arch/gzip rpm2targz libarchive lz4 lzip \
  duplicity obnam cabextract lbzip2 spideroak-bin lziprecover xdelta \
  mscompress pigz diffball blosc snappy tsm zpaq dar pdlzip plzip \
  fsarchiver ncompress"
- EMAILTO[20]='"<%=tripwire_emailto%>"'
+ EMAILTO[20]='"<%= @tripwire_emailto %>"'
 SEVERITY[20]='66'
 
 #####  End of PACKAGES[] package lists  #####
@@ -348,14 +348,14 @@ SEVERITY[20]='66'
  /dev/console /dev/cua0 /dev/gpmctl /dev/initctl /dev/log /dev/port \
  /dev/ppp /dev/ptyp* /dev/tty* /dev/urandom /dev/watchdog*"
    SEC_MOD[21]=' -i'
-   EMAILTO[21]='"<%=tripwire_emailto%>"'
+   EMAILTO[21]='"<%= @tripwire_emailto %>"'
 COMMENTS_2[21]='several /proc/* files undergo time modification'
 FILELIST_2[21]='/proc/*'
  SEC_MOD_2[21]=' -m'
  SFT_MOD_2[21]=' -mc'
 
   RULENAME[22]='Other Config Files'
-   EMAILTO[22]='"<%=tripwire_emailto%>"'
+   EMAILTO[22]='"<%= @tripwire_emailto %>"'
   COMMENTS[22]='Files not installed with packages'
   FILELIST[22]='/etc /usr/etc'
    SEC_MOD[22]=' -m'
@@ -387,7 +387,7 @@ FILELIST_4[22]="/etc/tripwire"
 # Exception for log files in /var/log/*g wildcard, that don't necessarily grow
 
 RULENAME[23]='Log Files'
- EMAILTO[23]='"<%=tripwire_emailto%>"'
+ EMAILTO[23]='"<%= @tripwire_emailto %>"'
 COMMENTS[23]='`logrotate` may change logfile inodes'
 FILELIST[23]='/var/log/critical /var/log/messages /var/log/*g'
 SEVERITY[23]='66'
@@ -396,7 +396,7 @@ SEVERITY[23]='66'
   SEC_EX[23]='$(Dynamic) -i'
 
 RULENAME[24]='Invariant Directories'
- EMAILTO[24]='"<%=tripwire_emailto%>"'
+ EMAILTO[24]='"<%= @tripwire_emailto %>"'
 COMMENTS[24]='Owner and group should remain static'
 FILELIST[24]='/ /dev /home /mnt /opt /sys /usr /var'
 SEVERITY[24]='66'
@@ -404,7 +404,7 @@ SEVERITY[24]='66'
  RECURSE[24]=' (recurse = 0)'
 
 RULENAME[25]='Temporary Directories'
- EMAILTO[25]='"<%=tripwire_emailto%>"'
+ EMAILTO[25]='"<%= @tripwire_emailto %>"'
 FILELIST[25]='/usr/tmp /var/tmp /tmp'
 SEVERITY[25]='33'
  ETC_SEC[25]='Invariant'
@@ -417,7 +417,7 @@ SEVERITY[25]='33'
 
   RULENAME[26]='OS Bin and Lib Directories'
   FILELIST[26]='/bin /lib /sbin /usr/libexec /usr/sbin /usr/local/sbin'
-   EMAILTO[26]='"<%=tripwire_emailto%>"'
+   EMAILTO[26]='"<%= @tripwire_emailto %>"'
 COMMENTS_2[26]='/lib/splash/cache is an active directory'
 FILELIST_2[26]='/lib/splash/cache'
  RECURSE_2[26]=' (recurse = 0)'
@@ -430,7 +430,7 @@ FILELIST_2[26]='/lib/splash/cache'
   RULENAME[27]='User Bin and Lib Directories'
   FILELIST[27]="/opt/bin /usr/bin /usr/games/bin /usr/local/bin /usr/local/games /usr/local/lib"
   SEVERITY[27]='66'
-   EMAILTO[27]='"<%=tripwire_emailto%>"'
+   EMAILTO[27]='"<%= @tripwire_emailto %>"'
 COMMENTS_2[27]='Full recursion of /usr/lib is prolix'
 FILELIST_2[27]='/usr/lib'
  RECURSE_2[27]=' (recurse = 1)'
@@ -442,7 +442,7 @@ FILELIST_2[27]='/usr/lib'
 #	** but ** this affects display opening permissions under X-win!
 
   RULENAME[28]='Root User Directory'
-   EMAILTO[28]='"<%=tripwire_emailto%>"'
+   EMAILTO[28]='"<%= @tripwire_emailto %>"'
   COMMENTS[28]='X-Windows should not be run as Root User!'
   FILELIST[28]='/root'
 COMMENTS_2[28]='Action in these directories will trigger a warning'
@@ -469,7 +469,7 @@ FILELIST_4[28]='/root/.Xauthority'
 
 let NEXT=${#RULENAME[@]}
   RULENAME[${NEXT}]='System Boot Changes'
-   EMAILTO[${NEXT}]='"<%=tripwire_emailto%>"'
+   EMAILTO[${NEXT}]='"<%= @tripwire_emailto %>"'
   COMMENTS[${NEXT}]='Files that change when the system boots'
   FILELIST[${NEXT}]='/etc/mtab /etc/ioctl.save /etc/.pwd.lock /var/lock/subsys'
    SEC_MOD[${NEXT}]=' -i'
