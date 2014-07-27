@@ -6,7 +6,7 @@
 # Dependency on iptables
 include_recipe "iptables"
 
-if ['solo', 'app', 'util', 'app_master'].include?(node[:instance_role])
+if ['solo', 'app', 'util', 'app_master', 'db_master', 'db_slave'].include?(node[:instance_role])
 	include_recipe "fail2ban::install"
 	include_recipe "fail2ban::config"
 

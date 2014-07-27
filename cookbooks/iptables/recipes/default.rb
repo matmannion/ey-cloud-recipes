@@ -3,7 +3,7 @@
 # Recipe:: default
 #
 
-if ['solo', 'app', 'util', 'app_master'].include?(node[:instance_role])
+if ['solo', 'app', 'util', 'app_master', 'db_master', 'db_slave'].include?(node[:instance_role])
 	include_recipe "iptables::install"
 	include_recipe "iptables::config"
 
