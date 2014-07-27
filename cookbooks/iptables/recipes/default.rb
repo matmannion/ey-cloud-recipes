@@ -8,7 +8,8 @@ if ['solo', 'app', 'util', 'app_master', 'db_master', 'db_slave'].include?(node[
 	include_recipe "iptables::config"
 
 	# Start the iptables service
-	execute "start iptables" do
-		command "sudo rc-service iptables start"
+	service "iptables" do
+		supports :restart => true
+		action [:enable, :start]
 	end
 end
